@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scale2Me — увеличение фотографий без потери резкости</title>
+<meta name="description" content="Scale2Me — увеличивает фотографии в 2, 4, 8, 16 раз и больше прямо в браузере. Без загрузки на сервер, без регистрации.">
+<meta name="theme-color" content="#ECEEF1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><circle cx=%2211%22 cy=%2211%22 r=%228%22 fill=%22none%22 stroke=%22%232453FF%22 stroke-width=%222%22/><line x1=%2216.5%22 y1=%2216.5%22 x2=%2222%22 y2=%2222%22 stroke=%22%232453FF%22 stroke-width=%222%22/></svg>">
+<link rel="stylesheet" href="style.css">
+<script>
+  // Applied before first paint to avoid a light/dark flash.
+  (function () {
+    try {
+      var stored = localStorage.getItem('scale2me-theme');
+      var theme = stored === 'dark' || stored === 'light'
+        ? stored
+        : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  })();
+</script>
+</head>
+<body>
+
+<div class="ruler" aria-hidden="true"><div class="wrap"></div></div>
+
+<header class="site">
+  <div class="wrap nav">
+    <a href="#top" class="logo">
+      <svg class="mark" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="11" cy="11" r="8.5" stroke="currentColor" stroke-width="2"/>
+        <line x1="16.8" y1="16.8" x2="23" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M7.5 11 L9.7 11 M11 8 L11 14 M13.3 9.3 L13.3 12.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      Scale2Me
+    </a>
+    <div class="nav-right">
+      <nav class="nav-links">
+        <a href="#workbench">Увеличить фото</a>
+        <a href="#how">Как это работает</a>
+        <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+      <button type="button" class="theme-toggle" id="themeToggle" aria-pressed="false" aria-label="Включить тёмную тему">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M12 2.5v2.6M12 18.9v2.6M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2.5 12h2.6M18.9 12h2.6M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero wrap">
+    <div>
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Обработка локально, в вашем браузере</span>
+      <h1>Больше пикселей. <em>Без</em> потери резкости.</h1>
+      <p class="lede">
+        Scale2Me увеличивает фотографии в 2, 4, 8, 16 раз и выше, используя
+        качественную ресемплинг-модель Lanczos с последующей коррекцией резкости —
+        вместо обычного растягивания картинки.
+      </p>
+      <div class="hero-cta">
+        <a href="#workbench" class="btn btn-primary">
+          Увеличить фото
+        </a>
+        <a href="#how" class="btn btn-ghost">Как это устроено</a>
+      </div>
+    </div>
+
+    <div class="viewfinder">
+      <span class="corner tl" aria-hidden="true"></span>
+      <span class="corner tr" aria-hidden="true"></span>
+      <span class="corner bl" aria-hidden="true"></span>
+      <span class="corner br" aria-hidden="true"></span>
+      <div class="viewfinder-inner">
+        <div class="compare" id="heroCompare">
+          <span class="tag before">До</span>
+          <span class="tag after">После ×4</span>
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Cdefs%3E%3Cfilter id='b'%3E%3CfeGaussianBlur stdDeviation='2.4'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='400' height='300' fill='%23dfe3e8'/%3E%3Cg filter='url(%23b)'%3E%3Ccircle cx='120' cy='110' r='55' fill='%23b7c2d6'/%3E%3Crect x='190' y='60' width='150' height='100' fill='%23c7cede'/%3E%3Cpath d='M0 230 L120 150 L200 210 L260 160 L400 240 L400 300 L0 300 Z' fill='%23aeb8c9'/%3E%3C/g%3E%3C/svg%3E" alt="Пример фотографии до увеличения, размытая версия">
+          <div class="after-wrap">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23dfe3e8'/%3E%3Ccircle cx='120' cy='110' r='55' fill='%23b7c2d6'/%3E%3Crect x='190' y='60' width='150' height='100' fill='%23c7cede'/%3E%3Cpath d='M0 230 L120 150 L200 210 L260 160 L400 240 L400 300 L0 300 Z' fill='%23aeb8c9'/%3E%3C/svg%3E" alt="Пример фотографии после увеличения, резкая версия">
+          </div>
+          <div class="handle" aria-hidden="true"></div>
+          <input type="range" min="0" max="100" value="50" aria-label="Перетащите, чтобы сравнить до и после" id="heroSlider">
+        </div>
+        <div class="hud">1200×800 <b>→</b> 4800×3200 px · <b>×4</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="workbench wrap" id="workbench">
+
+    <div class="panel">
+      <h2>1. Загрузите фотографию</h2>
+      <p class="hint">JPEG, PNG или WebP. Файл никуда не отправляется — увеличение считается прямо на вашем устройстве.</p>
+
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Загрузить фотографию">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 16V4M12 4L7 9M12 4l5 5" stroke="#2453FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="#2453FF" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <div><strong>Перетащите фото сюда</strong> или нажмите, чтобы выбрать</div>
+        <div class="sub">Рекомендуем начинать с исходников до ~4000×3000&nbsp;px</div>
+        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp">
+      </div>
+
+      <div class="file-row" id="fileRow" style="display:none; margin-top:14px;">
+        <img class="thumb" id="thumb" alt="Миниатюра загруженного изображения">
+        <div class="meta">
+          <div class="name" id="fileName">—</div>
+          <div class="dims" id="fileDims">—</div>
+        </div>
+        <button type="button" id="clearFile">Убрать</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>2. Во сколько раз увеличить</h2>
+      <p class="hint">Выберите множитель — как кольцо зума на объективе.</p>
+
+      <div class="zoom-dial" role="radiogroup" aria-label="Множитель увеличения">
+        <label class="zoom-opt active" data-scale="2">
+          <input type="radio" name="scale" value="2" checked>
+          <span class="n">×2</span>
+          <span class="ticks">──┼──</span>
+        </label>
+        <label class="zoom-opt" data-scale="4">
+          <input type="radio" name="scale" value="4">
+          <span class="n">×4</span>
+          <span class="ticks">──┼──┼──</span>
+        </label>
+        <label class="zoom-opt" data-scale="8">
+          <input type="radio" name="scale" value="8">
+          <span class="n">×8</span>
+          <span class="ticks">──┼──┼──┼──</span>
+        </label>
+        <label class="zoom-opt" data-scale="16">
+          <input type="radio" name="scale" value="16">
+          <span class="n">×16</span>
+          <span class="ticks">──┼──┼──┼──┼──</span>
+        </label>
+
+        <div class="zoom-custom" id="customWrap">
+          <input type="radio" name="scale" value="custom" id="customRadio" class="visually-hidden">
+          <label for="customInput" style="cursor:pointer;">×</label>
+          <input type="number" id="customInput" min="1.1" max="32" step="0.5" placeholder="напр. 6">
+        </div>
+      </div>
+
+      <div class="readout" id="readout" style="margin-top:20px;">
+        <div class="item"><span class="k">Исходный размер</span><span class="v" id="roSrc">—</span></div>
+        <div class="item"><span class="k">Итоговый размер</span><span class="v" id="roDst">—</span></div>
+        <div class="item"><span class="k">Мегапикселей на выходе</span><span class="v" id="roMp">—</span></div>
+        <div class="item"><span class="k">Множитель</span><span class="v" id="roScale">—</span></div>
+      </div>
+      <p class="note hidden" id="clampNote"></p>
+    </div>
+
+    <div class="panel">
+      <h2>3. Настройки качества</h2>
+      <p class="hint">Значения по умолчанию подходят для большинства фото — можно не трогать.</p>
+
+      <div class="opt-grid">
+        <div class="opt-block">
+          <label class="title" for="sharpenRange">Резкость после увеличения <span class="val" id="sharpenVal">40%</span></label>
+          <input type="range" id="sharpenRange" min="0" max="100" value="40">
+          <div class="desc">Компенсирует размытие, возникающее при увеличении. 0 — выключить.</div>
+        </div>
+
+        <div class="opt-block">
+          <div class="toggle-row">
+            <div>
+              <div class="title" style="margin-bottom:2px;">Подавление шума</div>
+              <div class="desc">Слегка сглаживает шум перед увеличением, чтобы его не «размножило».</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="denoiseToggle">
+              <span class="track"><span class="thumb"></span></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="opt-block">
+          <div class="title" style="margin-bottom:10px;">Формат результата</div>
+          <div class="format-row" role="radiogroup" aria-label="Формат файла">
+            <label class="chip active"><input type="radio" name="format" value="png" checked>PNG</label>
+            <label class="chip"><input type="radio" name="format" value="jpeg">JPEG</label>
+            <label class="chip"><input type="radio" name="format" value="webp">WebP</label>
+          </div>
+        </div>
+
+        <div class="opt-block" id="qualityBlock" style="display:none;">
+          <label class="title" for="qualityRange">Качество сжатия <span class="val" id="qualityVal">92%</span></label>
+          <input type="range" id="qualityRange" min="50" max="100" value="92">
+          <div class="desc">Выше — крупнее файл, меньше артефактов сжатия.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>4. Обработать</h2>
+      <button class="btn btn-primary btn-block" id="processBtn" disabled>Загрузите фото, чтобы начать</button>
+
+      <div class="progress-bar" id="progressBar" style="display:none;">
+        <span id="progressFill"></span>
+      </div>
+      <div class="status-line" id="statusLine" style="display:none;">
+        <span id="statusText">Готовим…</span>
+        <span id="statusPct">0%</span>
+      </div>
+
+      <div class="process-stage" id="stage" style="display:none; margin-top:18px;">
+        <div class="scanbeam" aria-hidden="true"></div>
+        <canvas id="resultCanvas"></canvas>
+      </div>
+
+      <div id="resultActions" class="result-actions" style="display:none; margin-top:16px; gap:10px; flex-wrap:wrap;">
+        <a class="btn btn-primary" id="downloadBtn" download="scale2me.png">Скачать результат</a>
+        <button class="btn btn-ghost" id="againBtn" type="button">Обработать ещё раз</button>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="wrap" id="how" style="padding-bottom:80px;">
+    <h2 style="font-family: var(--font-display); font-size: 26px; margin-bottom: 22px;">Как это работает</h2>
+    <div class="steps">
+      <div class="step">
+        <span class="num">01</span>
+        <h3>Файл не покидает браузер</h3>
+        <p>Изображение читается локально через File API — на сервер ничего не отправляется, сайт статический.</p>
+      </div>
+      <div class="step">
+        <span class="num">02</span>
+        <h3>Ресемплинг Lanczos</h3>
+        <p>Каждый новый пиксель считается взвешенной суммой соседних по функции Ланцоша — четче, чем обычное растягивание.</p>
+      </div>
+      <div class="step">
+        <span class="num">03</span>
+        <h3>Шумоподавление и резкость</h3>
+        <p>По желанию — лёгкое сглаживание шума перед увеличением и unsharp mask после, чтобы вернуть контур деталям.</p>
+      </div>
+      <div class="step">
+        <span class="num">04</span>
+        <h3>Экспорт в нужном формате</h3>
+        <p>Результат собирается на canvas и сохраняется в PNG, JPEG или WebP — сразу на ваше устройство.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <span>Scale2Me — увеличение фотографий в браузере, без сервера.</span>
+    <span>Работает как статическая страница на GitHub Pages.</span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
